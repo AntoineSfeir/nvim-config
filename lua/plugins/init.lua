@@ -34,8 +34,11 @@ return {
     "nvim-treesitter/nvim-treesitter",
     opts = {
       ensure_installed = {
-        "vim", "lua", "vimdoc",
-        "html", "css",
+        "vim",
+        "lua",
+        "vimdoc",
+        "html",
+        "css",
       },
     },
   },
@@ -49,7 +52,7 @@ return {
   },
 
   -- Debug Adapter Protocol (DAP) Integration
-   {
+  {
     "rcarriga/nvim-dap-ui",
     event = "VeryLazy",
     dependencies = {
@@ -83,10 +86,10 @@ return {
     },
   },
 
-   {
+  {
     "mfussenegger/nvim-dap",
     config = function()
-      local dap = require("dap")
+      local dap = require "dap"
 
       -- Example Debugging Keybindings
       vim.keymap.set("n", "<F5>", dap.continue, { desc = "DAP Continue" })
@@ -105,6 +108,26 @@ return {
   {
     "nvim-neotest/nvim-nio", -- Ensure nvim-nio is installed
   },
+  -- install without yarn or npm
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function()
+      vim.fn["mkdp#util#install"]()
+    end,
+  },
+  -- install with yarn or npm
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && npm install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+    end,
+    ft = { "markdown" },
+  },
+
   -- Additional LSP Enhancements
   -- {
   --   "jose-elias-alvarez/null-ls.nvim",
@@ -114,4 +137,3 @@ return {
   --   end,
   -- },
 }
-

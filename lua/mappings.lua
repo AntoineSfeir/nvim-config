@@ -27,3 +27,7 @@ map("n", "<leader>dl", function() dap.run_last() end, { desc = "DAP Run Last Deb
 local dapui = require "dapui"
 map("n", "<leader>du", function() dapui.toggle() end, { desc = "DAP UI Toggle" })
 
+-- Markdown Preview Key Mappings (normal mode only; <Plug> mappings)
+vim.api.nvim_set_keymap("n", "<C-s>", "<Plug>MarkdownPreview", {})
+vim.api.nvim_set_keymap("n", "<M-s>", "<Plug>MarkdownPreviewStop", {})
+vim.api.nvim_set_keymap("n", "<C-p>", "<Plug>MarkdownPreviewToggle", {})
