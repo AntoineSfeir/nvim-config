@@ -110,7 +110,7 @@ return {
                 -- it applies to every language server without a custom handler
                 omnisharp = function()
                     local pid = vim.fn.getpid()
-                    local omnisharp_bin = 'C:\\Users\\asfei\\AppData\\Local\\omnisharp-win-x64\\OmniSharp.exe'
+                    local omnisharp_bin = 'C:\\Users\\Usr\\AppData\\Local\\omnisharp-win-x64\\OmniSharp.exe'
 
                     require('lspconfig').omnisharp.setup({
                         cmd = { omnisharp_bin, "--languageserver", "--hostPID", tostring(pid) },
