@@ -14,8 +14,16 @@ return {
         -- Snippets
         'L3MON4D3/LuaSnip',
         'rafamadriz/friendly-snippets',
+        -- Razor syntax
+        'jlcrochet/vim-razor',
     },
     config = function()
+        vim.filetype.add({
+            extension = {
+                cshtml = "razor",
+            },
+        })
+
         local autoformat_filetypes = {
             "lua",
         }
@@ -109,6 +117,12 @@ return {
             handlers = {
                 -- This first function is the "default handler"
                 -- it applies to every language server without a custom handler
+                html = function()
+                    require('lspconfig').html.setup({
+                        filetypes = { "html", "razor" },
+                    })
+                end,
+
                 angularls = function()
                     require('lspconfig').angularls.setup({
                         cmd = { "ngserver", "--stdio", "--tsProbeLocations", "", "--ngProbeLocations", "" },
@@ -131,6 +145,7 @@ return {
 
                     require('lspconfig').omnisharp.setup({
                         cmd = { omnisharp_bin, "--languageserver", "--hostPID", tostring(pid) },
+                        filetypes = { "cs", "vb", "razor" },
                         capabilities = require('cmp_nvim_lsp').default_capabilities(),
                         on_attach = function(client, bufnr)
                             local opts = { buffer = bufnr }
