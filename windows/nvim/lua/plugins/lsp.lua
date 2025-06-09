@@ -14,8 +14,16 @@ return {
         -- Snippets
         'L3MON4D3/LuaSnip',
         'rafamadriz/friendly-snippets',
+        -- Razor syntax
+        'jlcrochet/vim-razor',
     },
     config = function()
+        vim.filetype.add({
+            extension = {
+                cshtml = "razor",
+            },
+        })
+
         local autoformat_filetypes = {
             "lua",
         }
@@ -104,16 +112,40 @@ return {
                 "intelephense",
                 "ts_ls",
                 "eslint",
+                "angularls"
             },
             handlers = {
-                -- this first function is the "default handler"
+                -- This first function is the "default handler"
                 -- it applies to every language server without a custom handler
+                html = function()
+                    require('lspconfig').html.setup({
+                        filetypes = { "html", "razor" },
+                    })
+                end,
+
+                angularls = function()
+                    require('lspconfig').angularls.setup({
+                        cmd = { "ngserver", "--stdio", "--tsProbeLocations", "", "--ngProbeLocations", "" },
+                        filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+                        root_dir = require('lspconfig').util.root_pattern('angular.json', 'project.json'),
+                        on_new_config = function(new_config, new_root_dir)
+                            new_config.cmd = {
+                                "ngserver",
+                                "--stdio",
+                                "--tsProbeLocations", new_root_dir,
+                                "--ngProbeLocations", new_root_dir
+                            }
+                        end,
+                    })
+                end,
+
                 omnisharp = function()
                     local pid = vim.fn.getpid()
-                    local omnisharp_bin = 'C:\\Users\\Usr\\AppData\\Local\\omnisharp-win-x64\\OmniSharp.exe'
+                    local omnisharp_bin = "/home/code_gig/.local/bin/omnisharp-roslyn/OmniSharp"
 
                     require('lspconfig').omnisharp.setup({
                         cmd = { omnisharp_bin, "--languageserver", "--hostPID", tostring(pid) },
+                        filetypes = { "cs", "vb", "razor" },
                         capabilities = require('cmp_nvim_lsp').default_capabilities(),
                         on_attach = function(client, bufnr)
                             local opts = { buffer = bufnr }
@@ -138,7 +170,27 @@ return {
                         end,
                     })
                 end,
-
+                ["ts_ls"] = function()
+                    require('lspconfig').ts_ls.setup({
+                        filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+                        cmd = { "typescript-language-server", "--stdio" },
+                        capabilities = require('cmp_nvim_lsp').default_capabilities(),
+                        on_attach = function(client, bufnr)
+                            local opts = { buffer = bufnr }
+                            vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+                            vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+                            -- Format on save
+                            if client.server_capabilities.documentFormattingProvider then
+                                vim.api.nvim_create_autocmd("BufWritePre", {
+                                    buffer = bufnr,
+                                    callback = function()
+                                        vim.lsp.buf.format({ async = true })
+                                    end
+                                })
+                            end
+                        end,
+                    })
+                end,
                 function(server_name)
                     require('lspconfig')[server_name].setup({})
                 end,
